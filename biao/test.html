@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<meta content="Text/html" charset="utf-8">
+<head>
+    <title></title>
+</head>
+<body>
+<script type="text/javascript" src="vue.min.js"></script>
+<div id="app">
+    <ol>
+        <li v-for="value in stats">{{ value.name }}</li>
+    </ol>
+</div>
+<script type="text/javascript">
+    var v = new Vue({
+        el: '#app',
+        data: {
+            stats:[
+                {name: 'xiaowang'},
+                {name: 'baidu'}
+            ]
+        }
+    }) 
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<meta content="Text/html" charset="utf-8">
+<head>
+    <title></title>
+    <link rel="stylesheet" href="bootstrap.css">
+    <script type="text/javascript" src="vue.min.js"></script>
+    <script type="text/javascript" src="bootstrap.js"></script>
+</head>
+<body>
+<!-- 设置id 为 box ，这样就锁定了vue作用的范围，也就是在id="box"的范围内有效 ，为了美观，这里调用bootstrap 进行css 设置-->
+     <div class="container" id="box">
+         <!-- 这里role是机器语言，是为了无障碍阅读准备的 -->
+         <form action="" role="form">
+             <div class="form-group">
+                  <!-- label 标签，for的值与输入框的id值相同时，关联着输入框的值,即当点击label标签时，会自动聚焦在关联的input输入框里 -->
+                <label for="username">用户名：</label>
+               <!-- v-modal 的值表示这个输入框关联着vue中data 下的userName -->
+                 <input type="text" class="form-control" id="username" placeholder="请输入用户名" v-model="userName">
+             </div>
+              <div class="form-group">
+                  <label for="userage">年龄：</label>
+                  <!-- v-modal 的值表示这个输入框关联着vue中data 下的userAge -->
+                 <input type="text" class="form-control" id="userage" placeholder="请输入年龄" v-model="userAge">
+             </div>
+              <div class="form-group">
+                  <!-- v-on:click 是绑定vue中点击事件的写法,这里绑定addUser()方法 -->
+                  <input type="button" value="添加" v-on:click="addUser()" class="btn btn-primary">
+                 <!-- v-on:click 是绑定vue中点击事件的写法,这里绑定resetRow()方法 -->
+                  <input class="btn btn-danger" value="删除" type="button" v-on:click="resetRow();">
+              </div>
+          </form>
+          <hr>
+          <table class="table table-hover table-bordered">
+             <caption class="h2 text-inifo">用户信息表</caption>
+              <thead>
+                  <tr class="text-danger ">
+                      <th class="text-center">序号</th>
+                      <th class="text-center">名字</th>
+                      <th class="text-center">年龄</th>
+                      <th class="text-center">操作</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <!-- v-for遍历数组userList -->
+                  <tr class="text-center" v-for="value in userList">
+                      <!-- 数组的是从0 开始计算的，所以这里加1 -->
+                      <td>{{value.curIndex}}</td>
+                      <td>{{value.name}}</td>
+                      <td>{{value.age}}</td>
+                      <td>
+                          <!-- data-toogle意思是触发modal，即模态框的意思，而模态框这里指触发id 为layer 的模态框 -->
+                          <!-- 并且绑定点击事件，改变curIndex的值，将它的值设置为当前遍历的userList的索引 -->
+                          <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#layer" v-on:click="delRow(value.curIndex)">删除</button>
+                      </td>
+                  </tr>
+                 <!-- v-show的值为true时候，本元素显示，否则隐藏 -->
+                 <tr v-show="userList.length != 0">
+                     <td class="text-right" colspan="4">
+                         <!-- data-toogle意思是触发modal，即模态框的意思，而模态框这里指触发id 为layer 的模态框 -->
+                         <!-- 并且绑定点击事件，改变curIndex的值，将它的值设置为-1 -->
+                         <button class="btn btn-danger btn-sm" v-on:click="delRow(curIndex=-1)" data-toggle="modal" data-target="#layer">删除全部</button>
+                     </td>
+                 </tr>
+                 <!-- v-show的值为true时候，本元素显示，否则隐藏 -->
+                 <!-- <tr v-show="userList.length == 0 ">
+                     <td class="text-center text-muted" colspan="4">
+                         <p>暂时无数据.........</p>
+                     </td>
+                 </tr> -->
+             </tbody>
+         </table>
+         <!-- 下面是模态框 id为layer,模态框，正常情况下是影藏的，是有当受到触发时，才会显示，，这个使用bootstrap.js来实现的-->
+ 
+         <div class="modal fade" role="dialog" id="layer">
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <!-- data-dismiss=“modal”,意思是，当点击本按钮时，会触发影藏modal模态框 -->
+                         <button class="close" data-dismiss="modal">
+                             <span>&times;</span>
+                         </button>
+                         <h4 class="modal-title">确认删除么？</h4>
+                     </div>
+ 
+                     <div class="modal-body text-right">
+                         <button class="btn btn-primary btn-sm" data-dismiss="modal">取消</button>
+                         <!-- 当点击确认时，触发绑定事件，执行delRow()方法，同时隐藏模态框（data-dismiss="modal"） -->
+                         <button class="btn btn-danger btn-sm" data-dismiss="modal" v-on:click="delRow(curIndex);">确认</button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+     <script type="text/javascript">
+    window.onload = function() {
+              var c = new Vue({
+                  el: "#box",
+                  data: {
+                      userList: [], //用来存放用户对象
+                      userName: '', // 用户名
+                      userAge: '', // 用户年龄
+                      curIndex: 0, //选中的当前项目索引，随便先设一个值-10
+                  },
+                  methods: {
+                      // 用户添加，添加的方法是，直接写成一个对象压入栈中
+                      addUser: function() {
+                            this.curIndex=++this.curIndex;
+                          this.userList.push({
+                              curIndex: this.curIndex,
+                              name: this.userName,
+                              age: this.userAge
+                          });
+                          // alert(this.userList);
+                          // 添加完成后，清空数据
+                          this.userAge = '';
+                          this.userName = '';
+                          // alert(this.userList);
+                      },
+                      // 删除用户
+                      delRow: function(n) {
+                        alert(n);
+                        
+                          // 传值为-1时，表示删除全部
+                          if (n == -1 || this.userList.length==1) {
+                              this.userList = [];
+                          } else {
+                              // 传值不为-1时，表示删除传入的项目
+                              // alert(n-1);
+                              // if(this.userList.length()==1){
+
+                              // }
+                              this.userList.splice(n-1, 1);
+                          }
+                      },
+                      // 重置函数：把用户名和年龄清空
+                      resetRow: function() {
+                          this.userAge = '';
+                          this.userName = '';
+                      }
+                  }
+              });
+          }
+</script>
+</body>
+</html>
